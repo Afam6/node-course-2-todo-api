@@ -46,7 +46,7 @@ app.get('/todos/:id', (req, res) => {
     }
     res.send({todo});
   }).catch((error) => {
-    res.status(400).send();
+    res.status(400).send(error);
   });
 });
 
@@ -63,7 +63,7 @@ app.delete('/todos/:id', (req, res) => {
     }
     res.status(200).send({todo});
   }).catch((error) => {
-    res.status(400).send();
+    res.status(400).send(error);
   });
 });
 
@@ -88,7 +88,20 @@ app.patch('/todos/:id', (req, res) => {
     }
     res.send({todo});
   }).catch((error) => {
-    res.status(400).send();
+    res.status(400).send(error);
+  });
+});
+
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
   });
 });
 
